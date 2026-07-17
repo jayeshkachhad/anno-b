@@ -12,6 +12,7 @@ export const loader = async ({ request }) => {
     const response = await admin.graphql(`
     query shopInfo {
       shop {
+        id
         name
         url
         myshopifyDomain
@@ -24,11 +25,17 @@ export const loader = async ({ request }) => {
     }
   `);
 
-  const {
-    data: { shop },
-  } = await response.json();
 
-  return { shop };
+  
+  let dataGet = await response.json();
+   console.log("Shop Loaded >>>> ", JSON.stringify(dataGet.data, null, 2))
+  
+  const {
+    data: { shop, id },
+  } = dataGet
+
+
+  return { shop, id };
 
 };
 
@@ -45,17 +52,42 @@ export const action = async ({ request }) => {
     textColor : formData.get("textColor")
   }
 
-  if (intent === "save") {
+if (intent === "save") {
+    const response = await admin.graphql(`
+      query shopInfo {
+        shop {
+          id
+          name
+          url
+          myshopifyDomain
+          plan {
+            publicDisplayName
+            partnerDevelopment
+            shopifyPlus
+          }
+        }
+      }
+    `);
+
+    const data = await response.json();
+
+    const shop = data.data.shop;
+    const shopName = shop.name;
+    const shopId = shop.id;
+
+    console.log("Shop:", shopName);
+    console.log("Shop ID:", shopId);
     console.log("Announcement text:", bar.text);
     console.log("Background color:", bar.bgColor);
     console.log("Text color:", bar.textColor);
+
     return { saved: true };
   }
 
-
   return {
-      barData: bar
+    barData: bar,
   };
+
 };
 
 export default function Index() {
