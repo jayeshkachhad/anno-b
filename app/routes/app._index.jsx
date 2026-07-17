@@ -78,12 +78,10 @@ export const action = async ({ request }) => {
     },
   );
   const variantResponseJson = await variantResponse.json();
-  
 
   return {
     product: responseJson.data.productCreate.product,
-    variant: variantResponseJson.data.productVariantsBulkUpdate.productVariants
-    
+    variant: variantResponseJson.data.productVariantsBulkUpdate.productVariants,
   };
 };
 
@@ -103,14 +101,50 @@ export default function Index() {
 
   return (
     <s-page heading="Customise AnnouncementBar">
-      
+      <s-section heading="Welcome Back! ">
+        <s-divider></s-divider>
 
-      <title>
-        ----------------------------------------------------
-      </title>
-      
+        <s-stack gap="base">
+          <s-grid gridTemplateColumns="repeat(12, 1fr)" gap="base">
+            <s-grid-item gridColumn="span 12" gridRow="span 1">
+              <s-text-area
+                label="Product description"
+                placeholder="Enter a detailed description..."
+                autocomplete="off"
+              ></s-text-area>
+            </s-grid-item>
 
-      
+            <s-s-grid-item gridColumn="span 4" gridRow="span 2">
+              <s-text-area
+                label="Product description"
+                placeholder="Enter a detailed description..."
+                autocomplete="off"
+              ></s-text-area>
+            </s-s-grid-item>
+            <s-s-grid-item gridColumn="span 4" gridRow="span 2">
+              <s-box padding="large" border="base" borderRadius="base">
+                <s-color-picker
+                  value="#FF0000FF"
+                  alpha
+                  name="color-with-alpha"
+                ></s-color-picker>
+              </s-box>
+            </s-s-grid-item>
+            {/* <s-s-grid-item gridColumn="span 4" gridRow="span 2" >
+
+s
+    </s-s-grid-item>
+    <s-s-grid-item gridColumn="span 4" gridRow="span 2" >
+
+
+    </s-s-grid-item>
+    <s-s-grid-item gridColumn="span 4" gridRow="span 2" >
+
+
+    </s-s-grid-item> */}
+          </s-grid>
+        </s-stack>
+      </s-section>
     </s-page>
   );
 }
