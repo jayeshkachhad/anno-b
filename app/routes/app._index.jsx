@@ -57,31 +57,10 @@ export const action = async ({ request }) => {
   );
   const responseJson = await response.json();
   const product = responseJson.data.productCreate.product;
-  const variantId = product.variants.edges[0].node.id;
-  const variantResponse = await admin.graphql(
-    `#graphql
-    mutation shopifyReactRouterTemplateUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
-      productVariantsBulkUpdate(productId: $productId, variants: $variants) {
-        productVariants {
-          id
-          price
-          barcode
-          createdAt
-        }
-      }
-    }`,
-    {
-      variables: {
-        productId: product.id,
-        variants: [{ id: variantId, price: "100.00" }],
-      },
-    },
-  );
-  const variantResponseJson = await variantResponse.json();
+  
 
   return {
-    product: responseJson.data.productCreate.product,
-    variant: variantResponseJson.data.productVariantsBulkUpdate.productVariants,
+    product: responseJson.data.productCreate.product
   };
 };
 
@@ -108,19 +87,13 @@ export default function Index() {
           <s-grid gridTemplateColumns="repeat(12, 1fr)" gap="base">
             <s-grid-item gridColumn="span 12" gridRow="span 1">
               <s-text-area
-                label="Product description"
+                label="Announcement Data"
                 placeholder="Enter a detailed description..."
                 autocomplete="off"
               ></s-text-area>
             </s-grid-item>
 
-            <s-s-grid-item gridColumn="span 4" gridRow="span 2">
-              <s-text-area
-                label="Product description"
-                placeholder="Enter a detailed description..."
-                autocomplete="off"
-              ></s-text-area>
-            </s-s-grid-item>
+            
             <s-s-grid-item gridColumn="span 4" gridRow="span 2">
               <s-box padding="large" border="base" borderRadius="base">
                 <s-color-picker
@@ -130,21 +103,18 @@ export default function Index() {
                 ></s-color-picker>
               </s-box>
             </s-s-grid-item>
-            {/* <s-s-grid-item gridColumn="span 4" gridRow="span 2" >
-
-s
-    </s-s-grid-item>
-    <s-s-grid-item gridColumn="span 4" gridRow="span 2" >
+           
 
 
-    </s-s-grid-item>
-    <s-s-grid-item gridColumn="span 4" gridRow="span 2" >
-
-
-    </s-s-grid-item> */}
           </s-grid>
         </s-stack>
       </s-section>
+      
+            <s-button >
+              Save
+            </s-button>
+
+            
     </s-page>
   );
 }
