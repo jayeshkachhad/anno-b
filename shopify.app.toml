@@ -26,6 +26,11 @@ scopes = "write_products"
 optional_scopes = [ ]
 use_legacy_install_flow = false
 
+[app_proxy]
+url = "https://hunting-clock-link-fioricet.trycloudflare.com/app/proxy/announcement"
+subpath = "announcement-bar"
+prefix = "apps"
+
 [auth]
 redirect_urls = [ ]
 
