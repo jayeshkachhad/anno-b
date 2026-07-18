@@ -3,11 +3,13 @@ import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
+import { syncSession } from "../lib/backend.server";
+
 
 export const loader = async ({ request }) => {
   // await authenticate.admin(request);
-  const { admin } = await authenticate.admin(request);
-
+  // const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
 
     const response = await admin.graphql(`
     query shopInfo {
@@ -33,6 +35,15 @@ export const loader = async ({ request }) => {
   const {
     data: { shop, id },
   } = dataGet
+
+  console.log("Connecting Real Backend ...")
+  
+  const backend = await syncSession(
+      shop,
+      session
+  );
+
+  console.log(backend);
 
 
   return { shop, id };
@@ -72,6 +83,9 @@ if (intent === "save") {
     const data = await response.json();
 
     const shop = data.data.shop;
+
+
+
     const shopName = shop.name;
     const shopId = shop.id;
 
