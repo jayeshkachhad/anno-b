@@ -84,7 +84,8 @@ export const action = async ({ request }) => {
   let bar = {
     text : formData.get("text"),
     bgColor : formData.get("bgColor"),
-    textColor : formData.get("textColor")
+    textColor : formData.get("textColor"),
+    barEnabled : formData.get("toggle")
   }
 
 if (intent === "save") {
@@ -148,7 +149,7 @@ const backendBar = await backendRequest({
 
         textColor: bar.textColor,
 
-        enabled: true
+        enabled: bar.barEnabled === "true"
 
     }
 
@@ -178,6 +179,7 @@ export default function Index() {
   console.log(announcement.announcementText);
   console.log(announcement.backgroundColor);
   console.log(announcement.textColor);
+  console.log( "Bar Toggle from Backend ------- >>> ", announcement.enabled);
 
   const fetcher = useFetcher();
   const shopify = useAppBridge();
@@ -185,10 +187,12 @@ export default function Index() {
   const textAreaRef = useRef(null);
   const bgColorPickerRef = useRef(null);
   const textColorPickerRef = useRef(null);
+  const barToggleSwitch = useRef(null);
 
   const [announcementText, setAnnouncementText] = useState(announcement?.announcementText ?? "Sample Text...");
   const [bgColor, setBgColor] = useState( announcement?.backgroundColor ?? "#FF0000FF");
   const [textColor, setTextColor] = useState( announcement?.textColor ?? "#FFFFFFFF");
+  const [barToggle, setToggle] = useState( announcement?.enabled ?? true);
   
 
 
@@ -204,6 +208,7 @@ useEffect(() => {
   setAnnouncementText(announcement.announcementText ?? "");
   setBgColor(announcement.backgroundColor ?? "#FF0000FF");
   setTextColor(announcement.textColor ?? "#FFFFFFFF");
+  setToggle(announcement.enabled ?? true);
 
   initialized.current = true;
 }, [announcement]);
@@ -213,9 +218,7 @@ useEffect(() => {
     fetcher.formMethod === "POST";
 
   useEffect(() => {
-    if (fetcher.data?.product?.id) {
-      shopify.toast.show("Product created");
-    }
+    
     if (fetcher.data?.saved) {
       shopify.toast.show("Saved");
     }
@@ -234,10 +237,12 @@ useEffect(() => {
     const textEl = textAreaRef.current;
     const bgEl = bgColorPickerRef.current;
     const textColorEl = textColorPickerRef.current;
+    const toggle = barToggleSwitch.current;
 
     const handleTextChange = (e) => setAnnouncementText(e.target.value);
     const handleBgChange = (e) => setBgColor(e.target.value);
     const handleTextColorChange = (e) => setTextColor(e.target.value);
+    const handleToggleSwitch = (e) => setToggle(e.target.checked);
 
     textEl?.addEventListener("input", handleTextChange);
     textEl?.addEventListener("change", handleTextChange);
@@ -246,6 +251,9 @@ useEffect(() => {
     textColorEl?.addEventListener("input", handleTextColorChange);
     textColorEl?.addEventListener("change", handleTextColorChange);
 
+    toggle?.addEventListener("input", handleToggleSwitch);
+    toggle?.addEventListener("change", handleToggleSwitch);
+
     return () => {
       textEl?.removeEventListener("input", handleTextChange);
       textEl?.removeEventListener("change", handleTextChange);
@@ -253,6 +261,9 @@ useEffect(() => {
       bgEl?.removeEventListener("change", handleBgChange);
       textColorEl?.removeEventListener("input", handleTextColorChange);
       textColorEl?.removeEventListener("change", handleTextColorChange);
+
+      toggle?.removeEventListener("input", handleToggleSwitch);
+      toggle?.removeEventListener("change", handleToggleSwitch);
     };
   }, []);
 
@@ -265,6 +276,7 @@ useEffect(() => {
         text: announcementText,
         bgColor,
         textColor,
+        toggle: barToggle,
       },
       { method: "POST" },
     );
@@ -329,6 +341,12 @@ useEffect(() => {
               {announcementText || "Your announcement bar preview will appear here"}
             </div>
           </s-box>
+
+          <s-switch
+            ref={barToggleSwitch}
+            checked={barToggle}
+            label="Enable Announcement Bar"
+          />
 
         </s-stack>
       </s-section>
