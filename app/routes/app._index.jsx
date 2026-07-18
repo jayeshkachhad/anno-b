@@ -51,7 +51,23 @@ export const loader = async ({ request }) => {
   // console.log(session.backendJwt)
 
 
-  return { shop, id };
+
+const getBar = await backendRequest({
+
+    endpoint: "/api/announcement/me",
+
+    method: "GET",
+
+    jwt: session.backendJwt
+
+});
+
+console.log("--------------------------- GET -----------------------------------")
+console.log(getBar);
+console.log("--------------------------- GOT -----------------------------------")
+
+
+  return { shop, id, announcement: getBar.data };
 
 };
 
@@ -138,9 +154,9 @@ const backendBar = await backendRequest({
 
 });
 
-console.log("--------------------------------------------------------------")
+console.log("--------------------------- SAVE -----------------------------------")
 console.log(backendBar);
-console.log("--------------------------------------------------------------")
+console.log("--------------------------- SAVED -----------------------------------")
 
     return { saved: true };
 
@@ -154,7 +170,12 @@ console.log("--------------------------------------------------------------")
 
 export default function Index() {
 
-  const { shop } = useLoaderData();
+  const { shop, announcement } = useLoaderData();
+
+  console.log("Got Announcement from Loader >>>>>>>>>> ", announcement)
+  console.log(announcement.announcementText);
+  console.log(announcement.backgroundColor);
+  console.log(announcement.textColor);
 
   const fetcher = useFetcher();
   const shopify = useAppBridge();
@@ -163,9 +184,9 @@ export default function Index() {
   const bgColorPickerRef = useRef(null);
   const textColorPickerRef = useRef(null);
 
-  const [announcementText, setAnnouncementText] = useState("");
-  const [bgColor, setBgColor] = useState("#FF0000FF");
-  const [textColor, setTextColor] = useState("#FFFFFFFF");
+  const [announcementText, setAnnouncementText] = useState(announcement?.announcementText ?? "Sample Text...");
+  const [bgColor, setBgColor] = useState( announcement?.backgroundColor ?? "#FF0000FF");
+  const [textColor, setTextColor] = useState( announcement?.textColor ?? "#FFFFFFFF");
 
   const isLoading =
     ["loading", "submitting"].includes(fetcher.state) &&
@@ -230,6 +251,7 @@ export default function Index() {
             <s-grid-item gridColumn="span 12" gridRow="span 1">
               <s-text-area
                 ref={textAreaRef}
+                value={announcementText}
                 label="Announcement Data"
                 placeholder="Enter a announcement..."
                 autocomplete="off"
@@ -241,7 +263,7 @@ export default function Index() {
               <s-box padding="large" border="base" borderRadius="base">
                 <s-color-picker
                   ref={bgColorPickerRef}
-                  value="#FF0000FF"
+                  value={bgColor}
                   alpha
                   name="color-with-alpha"
                   label="Background color"
@@ -253,7 +275,7 @@ export default function Index() {
               <s-box padding="large" border="base" borderRadius="base">
                 <s-color-picker
                   ref={textColorPickerRef}
-                  value="#FFFFFFFF"
+                  value={textColor}
                   alpha
                   name="text-color-with-alpha"
                   label="Text color"
