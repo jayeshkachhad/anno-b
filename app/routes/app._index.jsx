@@ -3,7 +3,7 @@ import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
-import { syncSession } from "../lib/backend.server";
+import { syncSession, backendRequest } from "../lib/backend.server";
 
 
 export const loader = async ({ request }) => {
@@ -45,13 +45,21 @@ export const loader = async ({ request }) => {
 
   console.log(backend);
 
+  session.backendJwt = backend.token;
+  console.log("Backend JWT Session Token stored in App Session........ ")
+  
+  // console.log(session.backendJwt)
+
 
   return { shop, id };
 
 };
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
+  // const { admin } = await authenticate.admin(request);
+
+  const { admin, session } = await authenticate.admin(request);
+
 
   const formData = await request.formData();
   const intent = formData.get("intent");
@@ -95,7 +103,47 @@ if (intent === "save") {
     console.log("Background color:", bar.bgColor);
     console.log("Text color:", bar.textColor);
 
+     console.log("Connecting Real Backend ACTION ...")
+  
+  const backend = await syncSession(
+      shop,
+      session
+  );
+
+  console.log(backend);
+
+  session.backendJwt = backend.token;
+  console.log("Backend JWT Session Token stored in App Session ACTION ........ ")
+  
+
+const backendBar = await backendRequest({
+
+    endpoint: "/api/announcement/save",
+
+    method: "POST",
+
+    jwt: session.backendJwt,
+
+    body: {
+
+        announcementText: bar.text,
+
+        backgroundColor: bar.bgColor,
+
+        textColor: bar.textColor,
+
+        enabled: true
+
+    }
+
+});
+
+console.log("--------------------------------------------------------------")
+console.log(backendBar);
+console.log("--------------------------------------------------------------")
+
     return { saved: true };
+
   }
 
   return {

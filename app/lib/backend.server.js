@@ -1,3 +1,30 @@
+export async function backendRequest({
+    endpoint,
+    method = "GET",
+    jwt,
+    body
+}) {
+
+    const response = await fetch(
+        `${process.env.BACKEND_URL}${endpoint}`,
+        {
+            method,
+
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`
+            },
+
+            body: body
+                ? JSON.stringify(body)
+                : undefined
+        }
+    );
+
+    return response.json();
+}
+
+
 export async function syncSession(shop, session) {
 
 
@@ -33,3 +60,5 @@ export async function syncSession(shop, session) {
     return response.json();
 
 }
+
+
