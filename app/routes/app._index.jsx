@@ -168,6 +168,8 @@ console.log("--------------------------- SAVED ---------------------------------
 
 };
 
+let barSet = false;
+
 export default function Index() {
 
   const { shop, announcement } = useLoaderData();
@@ -187,6 +189,24 @@ export default function Index() {
   const [announcementText, setAnnouncementText] = useState(announcement?.announcementText ?? "Sample Text...");
   const [bgColor, setBgColor] = useState( announcement?.backgroundColor ?? "#FF0000FF");
   const [textColor, setTextColor] = useState( announcement?.textColor ?? "#FFFFFFFF");
+  
+
+
+  // const [announcementText, setAnnouncementText] = useState("");
+  // const [bgColor, setBgColor] = useState("#FF0000FF");
+  // const [textColor, setTextColor] = useState("#FFFFFFFF");
+
+const initialized = useRef(false);
+
+useEffect(() => {
+  if (!announcement || initialized.current) return;
+
+  setAnnouncementText(announcement.announcementText ?? "");
+  setBgColor(announcement.backgroundColor ?? "#FF0000FF");
+  setTextColor(announcement.textColor ?? "#FFFFFFFF");
+
+  initialized.current = true;
+}, [announcement]);
 
   const isLoading =
     ["loading", "submitting"].includes(fetcher.state) &&
@@ -200,8 +220,17 @@ export default function Index() {
       shopify.toast.show("Saved");
     }
   }, [fetcher.data, shopify]);
+  
+  // useEffect(() => {
+  //   if (!announcement) return;
+
+  //   setAnnouncementText(announcement.announcementText ?? "");
+  //   setBgColor(announcement.backgroundColor ?? "#FF0000FF");
+  //   setTextColor(announcement.textColor ?? "#FFFFFFFF");
+  // }, [announcement]);
 
   useEffect(() => {
+
     const textEl = textAreaRef.current;
     const bgEl = bgColorPickerRef.current;
     const textColorEl = textColorPickerRef.current;
@@ -227,7 +256,7 @@ export default function Index() {
     };
   }, []);
 
-  const generateProduct = () => fetcher.submit({}, { method: "POST" });
+  
 
   const handleSave = () => {
     fetcher.submit(
